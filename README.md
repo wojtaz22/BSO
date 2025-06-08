@@ -1,0 +1,2 @@
+# BSO
+Projekt z BSO
