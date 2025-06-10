@@ -77,6 +77,9 @@ services:
       - gvmd_socket_vol:/run/gvmd
       - ospd_openvas_socket_vol:/run/ospd
       - psql_socket_vol:/var/run/postgresql
+      - /etc/ssl/certs/:/etc/ssl/certs:ro
+    env_file:
+      - ./.env
     depends_on:
       pg-gvm:
         condition: service_started
@@ -212,17 +215,20 @@ services:
     depends_on:
       - gvmd
       - ospd-openvas
-      
-  controller:
-    build:
-      context: .
-      dockerfile: Dockerfile.controller
-    container_name: bso-controller
+  gvm-cli:
+    container_name: greenbone-cli
+    entrypoint: [ "tail", "-f", "/dev/null" ]
+    user: "1001:1001"
     volumes:
       - gvmd_socket_vol:/run/gvmd
       - ospd_openvas_socket_vol:/run/ospd
+      - /etc/ssl/certs/:/etc/ssl/certs:ro
       - ./scripts:/opt/scripts:ro
-    network_mode: host    # potrzebne, żeby nmap widział LAN
+    network_mode: host
+    cap_add:
+      - NET_ADMIN # for capturing packages in promiscuous mode
+      - NET_RAW # for raw sockets e.g. used for the boreas alive detection
+    restart: unless-stopped
     depends_on:
       - gvmd
       - ospd-openvas
