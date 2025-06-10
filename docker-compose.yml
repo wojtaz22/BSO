@@ -59,7 +59,7 @@ services:
     image: registry.community.greenbone.net/community/gvm-tools
     container_name: greenbone-cli
     entrypoint: ["tail", "-f", "/dev/null"]
-    user: "1001:1001"
+    #user: "1001:1001"
     volumes:
       - ./scripts:/opt/scripts:ro
       - gvmd_socket_vol:/run/gvmd
